@@ -1,0 +1,121 @@
+package com.example.gmh_app.Activities;
+
+import android.os.Bundle;
+import android.util.Log;
+import android.widget.Button;
+import android.widget.EditText;
+import android.widget.RadioGroup;
+import android.widget.RatingBar;
+
+import androidx.appcompat.app.AlertDialog;
+import androidx.appcompat.app.AppCompatActivity;
+
+import com.example.gmh_app.R;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
+
+import java.util.HashMap;
+import java.util.Map;
+
+public class AfterVideo14Activity extends AppCompatActivity {
+
+    private RatingBar ratingBarVideo;
+    private RatingBar ratingBarClarity;
+    private RatingBar ratingBarUsefulness;
+    private RatingBar ratingBarCurrentHabits;
+    private EditText editTextLesson;
+    private RadioGroup radioGroupChanges;
+    private EditText editTextChanges;
+    private EditText editTextComments;
+    private Button buttonSubmit;
+
+    private DatabaseReference databaseReference;
+    private static final String TAG = "AfterVideo14Activity";
+
+    @Override
+    protected void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        setContentView(R.layout.activity_after_video14);
+
+        // Initialize Firebase Database reference
+        databaseReference = FirebaseDatabase.getInstance().getReference("Feedback After Video 14");
+        databaseReference.keepSynced(true); // Ensures local data is synced when online
+
+        // Debugging: Log Firebase Database path
+        Log.d(TAG, "Firebase Database Path: " + databaseReference);
+
+        // Link UI elements to their corresponding views
+        ratingBarVideo = findViewById(R.id.ratingBarVideo);
+        ratingBarClarity = findViewById(R.id.ratingBarClarity);
+        ratingBarUsefulness = findViewById(R.id.ratingBarUsefulness);
+        ratingBarCurrentHabits = findViewById(R.id.current_habits_rating);
+        editTextLesson = findViewById(R.id.et_lesson);
+        radioGroupChanges = findViewById(R.id.rg_changes);
+        editTextChanges = findViewById(R.id.et_changes);
+        editTextComments = findViewById(R.id.et_comments);
+        buttonSubmit = findViewById(R.id.btn_submit);
+
+        buttonSubmit.setOnClickListener(v -> submitFeedback());
+    }
+
+    private void submitFeedback() {
+        // Collect data from UI elements
+        float videoRating = ratingBarVideo.getRating();
+        float clarityRating = ratingBarClarity.getRating();
+        float usefulnessRating = ratingBarUsefulness.getRating();
+        float currentHabitsRating = ratingBarCurrentHabits.getRating();
+        String lessonLearned = editTextLesson.getText().toString().trim();
+        String plannedChanges = editTextChanges.getText().toString().trim();
+        String comments = editTextComments.getText().toString().trim();
+
+        int selectedChangesId = radioGroupChanges.getCheckedRadioButtonId();
+        boolean changesPlanned = (selectedChangesId == R.id.rb_changes_yes);
+
+        // Validation
+        if (lessonLearned.isEmpty() || comments.isEmpty() || (changesPlanned && plannedChanges.isEmpty())) {
+            showMessageDialog("Validation Error", "Please complete all required fields before submitting.", false);
+            return;
+        }
+
+        // Create a feedback map to send to Firebase
+        Map<String, Object> feedback = new HashMap<>();
+        feedback.put("videoRating", videoRating);
+        feedback.put("clarityRating", clarityRating);
+        feedback.put("usefulnessRating", usefulnessRating);
+        feedback.put("currentHabitsRating", currentHabitsRating);
+        feedback.put("lessonLearned", lessonLearned);
+        feedback.put("changesPlanned", changesPlanned);
+        feedback.put("plannedChanges", plannedChanges.isEmpty() ? "No changes provided" : plannedChanges);
+        feedback.put("comments", comments.isEmpty() ? "No comments provided" : comments);
+
+        // Send data to Firebase
+        databaseReference.child(String.valueOf(System.currentTimeMillis())).setValue(feedback)
+                .addOnCompleteListener(task -> {
+                    if (task.isSuccessful()) {
+                        showMessageDialog("Success", "Feedback submitted successfully!", true);
+                    } else {
+                        String error = task.getException() != null ? task.getException().getMessage() : "Unknown error.";
+                        Log.e(TAG, "Failed to submit feedback: " + error);
+                        showMessageDialog("Error", "Error submitting feedback: " + error, false);
+                    }
+                });
+
+        // Proceed to the next activity immediately
+        setResult(RESULT_OK);
+        finish(); // Close this activity
+    }
+
+    // Helper method to show a message dialog
+    private void showMessageDialog(String title, String message, boolean isSuccess) {
+        new AlertDialog.Builder(this)
+                .setTitle(title)
+                .setMessage(message)
+                .setPositiveButton("OK", (dialog, which) -> {
+                    if (isSuccess) {
+                        setResult(RESULT_OK);
+                        finish(); // Close activity after successful submission
+                    }
+                })
+                .show();
+    }
+}
