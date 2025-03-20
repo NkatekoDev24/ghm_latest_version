@@ -10,6 +10,7 @@ public class VideoModel implements Parcelable {
     private final boolean isQuestion;
     private final int questionId;
     private boolean completed; // New field for completion status
+    private boolean isFiltered; // New field to track if this video belongs to a filtered list
 
     public static final int QUESTION_1 = 1;
     public static final int QUESTION_2 = 2;
@@ -46,7 +47,8 @@ public class VideoModel implements Parcelable {
         this.videoUri = videoUri;
         this.isQuestion = false;
         this.questionId = -1;
-        this.completed = false; // Default to not completed
+        this.completed = false;
+        this.isFiltered = false; // Default to not filtered
     }
 
     public VideoModel(String title, boolean isQuestion, int questionId) {
@@ -54,7 +56,8 @@ public class VideoModel implements Parcelable {
         this.isQuestion = isQuestion;
         this.questionId = questionId;
         this.videoUri = null;
-        this.completed = false; // Default to not completed
+        this.completed = false;
+        this.isFiltered = false; // Default to not filtered
     }
 
     protected VideoModel(Parcel in) {
@@ -62,7 +65,8 @@ public class VideoModel implements Parcelable {
         videoUri = in.readString();
         isQuestion = in.readByte() != 0;
         questionId = in.readInt();
-        completed = in.readByte() != 0; // Read completed status
+        completed = in.readByte() != 0;
+        isFiltered = in.readByte() != 0; // Read filtered status
     }
 
     public static final Creator<VideoModel> CREATOR = new Creator<VideoModel>() {
@@ -88,6 +92,7 @@ public class VideoModel implements Parcelable {
     public boolean isQuestion() {
         return isQuestion;
     }
+
     public boolean isCompleted() {
         return completed;
     }
@@ -98,6 +103,14 @@ public class VideoModel implements Parcelable {
 
     public int getQuestionId() {
         return questionId;
+    }
+
+    public boolean isFiltered() {
+        return isFiltered;
+    }
+
+    public void setFiltered(boolean isFiltered) {
+        this.isFiltered = isFiltered;
     }
 
     @Override
@@ -111,6 +124,7 @@ public class VideoModel implements Parcelable {
         parcel.writeString(videoUri);
         parcel.writeByte((byte) (isQuestion ? 1 : 0));
         parcel.writeInt(questionId);
-        parcel.writeByte((byte) (completed ? 1 : 0)); // Write completed status
+        parcel.writeByte((byte) (completed ? 1 : 0));
+        parcel.writeByte((byte) (isFiltered ? 1 : 0)); // Write filtered status
     }
 }

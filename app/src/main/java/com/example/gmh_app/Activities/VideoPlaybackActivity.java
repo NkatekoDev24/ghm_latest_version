@@ -21,11 +21,13 @@ public class VideoPlaybackActivity extends AppCompatActivity {
 
     public static final String EXTRA_VIDEO_LIST = "EXTRA_VIDEO_LIST";
     public static final String EXTRA_VIDEO_INDEX = "EXTRA_VIDEO_INDEX";
+    public static final String EXTRA_IS_FILTERED = "EXTRA_IS_FILTERED";  // New flag to check if filtered list is active
     public static final int REQUEST_CODE_VIDEO_PLAYBACK = 1;
     public static final int REQUEST_CODE_QUESTION = 2;
 
     private ArrayList<VideoModel> videoList;
     private int currentVideoIndex;
+    private boolean isFiltered;  // Track if we're using the filtered list
 
     private SimpleExoPlayer simpleExoPlayer;
     private ProgressBar progressBar;
@@ -44,11 +46,11 @@ public class VideoPlaybackActivity extends AppCompatActivity {
         exoPause = findViewById(R.id.exo_pause);
         exoReplay = findViewById(R.id.exo_replay);
 
-        // Hide replay button initially
         exoReplay.setVisibility(View.GONE);
 
         videoList = getIntent().getParcelableArrayListExtra(EXTRA_VIDEO_LIST);
         currentVideoIndex = getIntent().getIntExtra(EXTRA_VIDEO_INDEX, 0);
+        isFiltered = getIntent().getBooleanExtra(EXTRA_IS_FILTERED, false); // Retrieve filter flag
 
         simpleExoPlayer = new SimpleExoPlayer.Builder(this).build();
         playerView.setPlayer(simpleExoPlayer);
@@ -59,7 +61,6 @@ public class VideoPlaybackActivity extends AppCompatActivity {
         exoSkipForward.setOnClickListener(v -> skipToNextVideo());
         exoSkipBack.setOnClickListener(v -> skipToPreviousVideo());
 
-        // Replay button click listener to restart video
         exoReplay.setOnClickListener(v -> replayVideo());
 
         simpleExoPlayer.addListener(new Player.Listener() {
@@ -101,7 +102,6 @@ public class VideoPlaybackActivity extends AppCompatActivity {
         simpleExoPlayer.prepare();
         simpleExoPlayer.play();
 
-        // Ensure play/pause buttons are visible and replay is hidden
         exoPlay.setVisibility(View.VISIBLE);
         exoPause.setVisibility(View.VISIBLE);
         exoReplay.setVisibility(View.GONE);
@@ -114,33 +114,58 @@ public class VideoPlaybackActivity extends AppCompatActivity {
     }
 
     private void replayVideo() {
-        simpleExoPlayer.seekTo(0); // Restart video
+        simpleExoPlayer.seekTo(0);
         simpleExoPlayer.play();
 
-        // Restore play/pause buttons
         exoPlay.setVisibility(View.VISIBLE);
         exoPause.setVisibility(View.VISIBLE);
         exoReplay.setVisibility(View.GONE);
     }
 
     private void skipToNextVideo() {
-        if (currentVideoIndex < videoList.size() - 1) {
-            currentVideoIndex += 3;
-            loadVideo();
+        if (isFiltered) {
+            // Filtered mode: Skip by 1
+            if (currentVideoIndex + 1 < videoList.size()) {
+                currentVideoIndex += 1;
+                loadVideo();
+            }
         } else {
-            setResult(RESULT_OK);
-            finish();
+            // Original mode: Try skipping forward up to 3 steps to a viewed video
+            int maxSkip = Math.min(3, videoList.size() - currentVideoIndex - 1);
+            int nextIndex = currentVideoIndex;
+
+            // Find the closest viewed video within the next 3 videos
+            for (int i = 1; i <= maxSkip; i++) {
+                if (videoList.get(currentVideoIndex + i).isCompleted()) {
+                    nextIndex = currentVideoIndex + i;
+                }
+            }
+
+            if (nextIndex > currentVideoIndex) {
+                currentVideoIndex = nextIndex;
+                loadVideo();
+            } else {
+                Toast.makeText(this, "You cannot skip to an unviewed video.", Toast.LENGTH_SHORT).show();
+            }
         }
     }
 
     private void skipToPreviousVideo() {
-        if (currentVideoIndex > 0) {
-            currentVideoIndex -= 3;
-            loadVideo();
-        }else if(currentVideoIndex == 1){
-            exoSkipBack.setVisibility(View.GONE);
+        if (isFiltered) {
+            // Filtered mode: Skip back by 1
+            if (currentVideoIndex > 0) {
+                currentVideoIndex -= 1;
+                loadVideo();
+            }
+        } else {
+            // Original mode: Skip back by only 1 video at a time
+            if (currentVideoIndex > 0) {
+                currentVideoIndex -= 3;
+                loadVideo();
+            }
         }
     }
+
 
     @Override
     protected void onDestroy() {

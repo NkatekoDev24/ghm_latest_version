@@ -91,25 +91,22 @@ public class VideoActivity extends AppCompatActivity {
     private List<VideoModel> filterOutQuestions(List<VideoModel> videos) {
         List<VideoModel> filteredVideos = new ArrayList<>();
         for (VideoModel video : videos) {
-            if (!video.isQuestion()) {
+            if (!video.isQuestion()) { // Ensure this returns a boolean
                 filteredVideos.add(video);
             }
         }
-        return filteredVideos;
+        return filteredVideos; // Ensure this returns List<VideoModel>
     }
+
 
     private void playNextVideo() {
         if (currentVideoIndex >= videoList.size()) {
             Toast.makeText(this, "All videos have been completed.", Toast.LENGTH_SHORT).show();
-
-            // Mark the section as completed
             markSectionAsCompleted(sectionKey);
 
-            // Unlock inflows if orientation is completed
             if (sectionKey.equals("orientation")) {
                 unlockSection("inflows");
             }
-
             return;
         }
 
@@ -118,21 +115,32 @@ public class VideoActivity extends AppCompatActivity {
         if (currentVideo.isQuestion()) {
             openQuestionActivity(currentVideo);
         } else {
-            openVideoPlaybackActivity(currentVideo);
+            boolean isFiltered = wasSectionCompleted(sectionKey); // Get whether the section is completed
+            openVideoPlaybackActivity(isFiltered); // Pass boolean instead of VideoModel
         }
 
         isViewed.set(currentVideoIndex, true);
-
         sharedPreferences.edit().putInt(sectionKey, currentVideoIndex).apply();
         videoAdapter.notifyDataSetChanged();
     }
 
-    private void openVideoPlaybackActivity(VideoModel video) {
+
+    private void openVideoPlaybackActivity(boolean isFiltered) {
+        List<VideoModel> filteredVideos = isFiltered ? filterOutQuestions(videoList) : new ArrayList<>(videoList);
+
+        if (filteredVideos.isEmpty()) {
+            Toast.makeText(this, "No valid videos to play.", Toast.LENGTH_SHORT).show();
+            return;
+        }
+
         Intent intent = new Intent(this, VideoPlaybackActivity.class);
-        intent.putParcelableArrayListExtra(VideoPlaybackActivity.EXTRA_VIDEO_LIST, new ArrayList<>(videoList));
+        intent.putParcelableArrayListExtra(VideoPlaybackActivity.EXTRA_VIDEO_LIST, new ArrayList<>(filteredVideos));
         intent.putExtra(VideoPlaybackActivity.EXTRA_VIDEO_INDEX, currentVideoIndex);
+        intent.putExtra(VideoPlaybackActivity.EXTRA_IS_FILTERED, isFiltered);
         startActivityForResult(intent, VideoPlaybackActivity.REQUEST_CODE_VIDEO_PLAYBACK);
     }
+
+
 
     private void openQuestionActivity(VideoModel question) {
         Intent intent = new Intent(this, getQuestionActivityClass(question.getQuestionId()));
