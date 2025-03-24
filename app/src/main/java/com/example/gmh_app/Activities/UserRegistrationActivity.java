@@ -6,7 +6,6 @@ import android.os.Bundle;
 import android.text.Html;
 import android.text.TextUtils;
 import android.util.Log;
-import android.view.View;
 import android.view.Window;
 import android.view.WindowManager;
 import android.widget.ArrayAdapter;
@@ -32,9 +31,9 @@ import java.util.List;
 public class UserRegistrationActivity extends AppCompatActivity {
 
     private EditText etUsername, etEmail, etCellphone, etAge, etLocation, etCity, etCountry, etBusinessName, etBusinessDescription;
-    private RadioGroup rgEducation, rgGender, rgBusinessName, rbBusinessYes,rbBusinessNo, rgNameDisplayed;
+    private RadioGroup rgEducation, rgGender, rgBusinessName, rgNameDisplayed;
     private Spinner spinnerProvince;
-    private TextView tvCombinedToc, video2, tvBusinessFollowup, tvBusinessName;
+    private TextView tvCombinedToc, video2;
     private Button btnSubmit;
     private DatabaseReference databaseReference;
 
@@ -74,23 +73,6 @@ public class UserRegistrationActivity extends AppCompatActivity {
         btnSubmit = findViewById(R.id.btnSubmit);
         tvCombinedToc = findViewById(R.id.tvCombinedToc);
         video2 = findViewById(R.id.video2);
-        tvBusinessFollowup = findViewById(R.id.tvBusinessNameFollowup);
-        tvBusinessName = findViewById(R.id.tvBusinessName);
-
-
-        rgBusinessName.setOnCheckedChangeListener((group, checkedId ) ->{
-            if (checkedId == R.id.rbBusinessYes) {
-                tvBusinessFollowup.setVisibility(View.VISIBLE);
-                rgNameDisplayed.setVisibility(View.VISIBLE);
-                tvBusinessName.setVisibility(View.VISIBLE);
-                etBusinessName.setVisibility(View.VISIBLE);
-            } else {
-                tvBusinessFollowup.setVisibility(View.GONE);
-                rgNameDisplayed.setVisibility(View.GONE);
-                tvBusinessName.setVisibility(View.GONE);
-                etBusinessName.setVisibility(View.GONE);
-            }
-        });
 
         // Populate the spinner
         List<String> provinces = new ArrayList<>(Arrays.asList("Select Province", "Gauteng", "Western Cape", "KwaZulu-Natal", "Eastern Cape", "Free State", "Limpopo", "Mpumalanga", "Northern Cape", "North West"));
@@ -130,10 +112,10 @@ public class UserRegistrationActivity extends AppCompatActivity {
             showDialog("Validation Error", "Please enter a valid email address.");
             isValid = false;
         } else if (TextUtils.isEmpty(password)) {
-            showDialog("Validation Error", "Phone number is required.");
+            showDialog("Validation Error", "Password is required.");
             isValid = false;
-        } else if (password.length() < 10) {
-            showDialog("Validation Error", "Phone number must be at least 10 characters long.");
+        } else if (password.length() < 6) {
+            showDialog("Validation Error", "Password must be at least 6 characters long.");
             isValid = false;
         } else if (spinnerProvince.getSelectedItemPosition() == 0) {
             showDialog("Validation Error", "Please select a province.");
@@ -147,18 +129,9 @@ public class UserRegistrationActivity extends AppCompatActivity {
         } else if (rgBusinessName.getCheckedRadioButtonId() == -1) {
             showDialog("Validation Error", "Please select if you have a business name.");
             isValid = false;
-        } else {
-            // Check business-related fields only if "Yes" is selected
-            int businessCheckedId = rgBusinessName.getCheckedRadioButtonId();
-            if (businessCheckedId == R.id.rbBusinessYes) {
-                if (TextUtils.isEmpty(etBusinessName.getText().toString().trim())) {
-                    showDialog("Validation Error", "Business name is required.");
-                    isValid = false;
-                } else if (rgNameDisplayed.getCheckedRadioButtonId() == -1) {
-                    showDialog("Validation Error", "Please select if your name should be displayed.");
-                    isValid = false;
-                }
-            }
+        } else if (rgNameDisplayed.getCheckedRadioButtonId() == -1) {
+            showDialog("Validation Error", "Please select if your name should be displayed.");
+            isValid = false;
         }
 
         return isValid;
