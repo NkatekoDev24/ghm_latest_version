@@ -101,6 +101,7 @@ public class UserRegistrationActivity extends AppCompatActivity {
         boolean isValid = true;
         String email = etEmail.getText().toString().trim();
         String password = etCellphone.getText().toString().trim();
+        String age = etAge.getText().toString().trim();
 
         if (TextUtils.isEmpty(etUsername.getText().toString().trim())) {
             showDialog("Validation Error", "Username is required.");
@@ -112,10 +113,10 @@ public class UserRegistrationActivity extends AppCompatActivity {
             showDialog("Validation Error", "Please enter a valid email address.");
             isValid = false;
         } else if (TextUtils.isEmpty(password)) {
-            showDialog("Validation Error", "Password is required.");
+            showDialog("Validation Error", "Cellphone number is required.");
             isValid = false;
-        } else if (password.length() < 6) {
-            showDialog("Validation Error", "Password must be at least 6 characters long.");
+        } else if (!isValidSouthAfricanCellNumber(password)) {
+            showDialog("Validation Error", "Please enter a valid South African cellphone number starting with +27 or 0.");
             isValid = false;
         } else if (spinnerProvince.getSelectedItemPosition() == 0) {
             showDialog("Validation Error", "Please select a province.");
@@ -132,8 +133,10 @@ public class UserRegistrationActivity extends AppCompatActivity {
         } else if (rgNameDisplayed.getCheckedRadioButtonId() == -1) {
             showDialog("Validation Error", "Please select if your name should be displayed.");
             isValid = false;
+        } else if( TextUtils.isEmpty(age) || !isAge(age)) {
+            showDialog("Validation Error", "Please enter an age between 14 and 120 years.");
+            isValid = false;
         }
-
         return isValid;
     }
 
@@ -216,4 +219,24 @@ public class UserRegistrationActivity extends AppCompatActivity {
         rgNameDisplayed.clearCheck();
         spinnerProvince.setSelection(0);
     }
+    // Validation helper method
+    private boolean isValidSouthAfricanCellNumber(String password) {
+        //Check if the number starts with +27 or 0
+        if (password.startsWith("+27")) {
+            //Validate length: +27XXXXXXXXX (12 characters in total)
+            return password.length() == 12 && password.substring(3).matches("\\d+");
+        } else if (password.startsWith("0")) {
+            //Validate length: 0XXXXXXXXX (10 characters in total)
+            return password.length() == 10 && password.substring(1).matches("\\d+");
+        } else {
+            //Invalid prefix
+            return false;
+        }
+    }
+    private boolean isAge(String str) {
+        int noAge = Integer.parseInt(str);
+        return noAge > 13 && noAge < 121;
+    }
 }
+
+
