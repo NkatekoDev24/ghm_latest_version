@@ -188,6 +188,7 @@
         </RadioGroup>
 
         <TextView
+            android:id="@+id/text_changes_explained"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="If yes: what changes do you want to make? Explain briefly."

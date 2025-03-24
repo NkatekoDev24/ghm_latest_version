@@ -112,11 +112,18 @@ public class VideoActivity extends AppCompatActivity {
 
         VideoModel currentVideo = videoList.get(currentVideoIndex);
 
-        if (currentVideo.isQuestion()) {
+        boolean isFiltered = wasSectionCompleted(sectionKey);
+
+        // Ensure that if the "profit" section is completed, we only show videos
+        if (sectionKey.equals("profit") && isFiltered) {
+            openVideoPlaybackActivity(true);
+            return;
+        }
+
+        if (currentVideo.isQuestion() && !isFiltered) {
             openQuestionActivity(currentVideo);
         } else {
-            boolean isFiltered = wasSectionCompleted(sectionKey); // Get whether the section is completed
-            openVideoPlaybackActivity(isFiltered); // Pass boolean instead of VideoModel
+            openVideoPlaybackActivity(isFiltered);
         }
 
         isViewed.set(currentVideoIndex, true);
@@ -154,6 +161,11 @@ public class VideoActivity extends AppCompatActivity {
     private void markSectionAsCompleted(String section) {
         SharedPreferences completionPrefs = getSharedPreferences(COMPLETION_PREFS, MODE_PRIVATE);
         completionPrefs.edit().putBoolean(section, true).apply();
+
+        // Ensure profit unlocks no further section
+        if (section.equals("orientation")) {
+            unlockSection("inflows");
+        }
     }
 
     private boolean wasSectionCompleted(String section) {

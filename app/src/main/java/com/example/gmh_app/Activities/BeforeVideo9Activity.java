@@ -5,6 +5,7 @@ import static android.content.ContentValues.TAG;
 import android.os.Bundle;
 import android.text.Html;
 import android.util.Log;
+import android.view.View;
 import android.view.Window;
 import android.view.WindowManager;
 import android.widget.Button;
@@ -74,6 +75,16 @@ public class BeforeVideo9Activity extends AppCompatActivity {
                         "Video 11: Fixed costs / Monthly basic costs / Overhead costs."
         ));
         video9IntroTextView.setText(Html.fromHtml("<u>VIDEO 9</u>"));
+
+        moneyInflowsGroup.setOnCheckedChangeListener((group, checkedId) -> {
+            if (checkedId == R.id.inflows_yes) {
+                tvChangesExplain.setVisibility(View.VISIBLE);
+                editTextGoodHabits.setVisibility(View.VISIBLE);
+            } else {
+                tvChangesExplain.setVisibility(View.GONE);
+                editTextGoodHabits.setVisibility(View.GONE);
+            }
+        });
 
         // Set up submit button listener
         btnSubmit.setOnClickListener(v -> submitResponses());

@@ -3,12 +3,14 @@ package com.example.gmh_app.Activities;
 import android.os.Bundle;
 import android.text.TextUtils;
 import android.util.Log;
+import android.view.View;
 import android.view.Window;
 import android.view.WindowManager;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.RadioGroup;
 import android.widget.RatingBar;
+import android.widget.TextView;
 
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
@@ -29,6 +31,7 @@ public class AfterVideo3Activity extends AppCompatActivity {
     // UI components
     private RatingBar ratingVideo, ratingClarity, ratingUsefulness;
     private EditText etLesson, etChangesExplain, etComments;
+    private TextView tv_changes_explain;
     private RadioGroup rgChanges;
     private Button btnSubmit;
 
@@ -62,6 +65,18 @@ public class AfterVideo3Activity extends AppCompatActivity {
         etChangesExplain = findViewById(R.id.et_changes_explain);
         etComments = findViewById(R.id.et_comments);
         btnSubmit = findViewById(R.id.btn_submit);
+        tv_changes_explain = findViewById(R.id.tv_changes_explain);
+
+
+        rgChanges.setOnCheckedChangeListener((group, checkedId) ->{
+            if (checkedId == R.id.rb_yes) {
+                tv_changes_explain.setVisibility(View.VISIBLE);
+                etChangesExplain.setVisibility(View.VISIBLE);
+            } else {
+                tv_changes_explain.setVisibility(View.GONE);
+                etChangesExplain.setVisibility(View.GONE);
+            }
+        });
 
         // Set button click listener
         btnSubmit.setOnClickListener(v -> validateAndSubmitFeedback());

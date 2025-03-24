@@ -89,6 +89,7 @@
 
         <!-- Question 2 -->
         <TextView
+            android:id="@+id/text_changes_explained"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginBottom="8dp"

@@ -5,12 +5,14 @@ import static android.content.ContentValues.TAG;
 import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
+import android.view.View;
 import android.view.Window;
 import android.view.WindowManager;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.RadioButton;
 import android.widget.RadioGroup;
+import android.widget.TextView;
 
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
@@ -25,6 +27,7 @@ import java.util.Map;
 public class OverallPart2Activity extends AppCompatActivity {
 
     private RadioGroup changesInflowsGroup, progressGroup, moneyHelpGroup;
+    private TextView changesExplained;
     private EditText importantHabits, part2Comments;
     private Button submitButton;
     private DatabaseReference databaseReference;
@@ -54,6 +57,17 @@ public class OverallPart2Activity extends AppCompatActivity {
         importantHabits = findViewById(R.id.important_habits);
         part2Comments = findViewById(R.id.part2_comments);
         submitButton = findViewById(R.id.submit_button);
+        changesExplained = findViewById(R.id.text_changes_explained);
+
+        changesInflowsGroup.setOnCheckedChangeListener((group, checkedId) -> {
+            if (checkedId == R.id.inflows_yes) {
+                changesExplained.setVisibility(View.VISIBLE);
+                importantHabits.setVisibility(View.VISIBLE);
+            } else {
+                changesExplained.setVisibility(View.GONE);
+                importantHabits.setVisibility(View.GONE);
+            }
+        });
 
         // Set the button click listener
         submitButton.setOnClickListener(v -> submitDataToFirebase());
@@ -88,11 +102,32 @@ public class OverallPart2Activity extends AppCompatActivity {
     }
 
     private boolean isFormValid() {
-        return changesInflowsGroup.getCheckedRadioButtonId() != -1 &&
-                progressGroup.getCheckedRadioButtonId() != -1 &&
-                moneyHelpGroup.getCheckedRadioButtonId() != -1 &&
-                !importantHabits.getText().toString().trim().isEmpty();
+        boolean isValid = true;
+
+        if (changesInflowsGroup.getCheckedRadioButtonId() == -1) {
+            showDialog("Validation Error", "Please select whether there are changes in inflows.");
+            isValid = false;
+        } else {
+            int inflowsCheckedId = changesInflowsGroup.getCheckedRadioButtonId();
+            if (inflowsCheckedId == R.id.inflows_yes && importantHabits.getText().toString().trim().isEmpty()) {
+                showDialog("Validation Error", "Please explain the important habits if there are changes in inflows.");
+                isValid = false;
+            }
+        }
+
+        if (progressGroup.getCheckedRadioButtonId() == -1) {
+            showDialog("Validation Error", "Please select your progress.");
+            isValid = false;
+        }
+
+        if (moneyHelpGroup.getCheckedRadioButtonId() == -1) {
+            showDialog("Validation Error", "Please select if money helped you.");
+            isValid = false;
+        }
+
+        return isValid;
     }
+
 
     private String getSelectedRadioText(RadioGroup radioGroup) {
         int selectedId = radioGroup.getCheckedRadioButtonId();

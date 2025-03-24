@@ -283,6 +283,7 @@
         </RadioGroup>
 
         <TextView
+            android:id="@+id/tvBusinessNameFollowup"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="If yes: is the name displayed visibly on the outside of the business?"
@@ -309,6 +310,7 @@
         </RadioGroup>
 
         <TextView
+            android:id="@+id/tvBusinessName"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="What is your business name (optional)?"

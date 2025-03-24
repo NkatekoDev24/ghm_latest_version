@@ -281,6 +281,7 @@
         </RadioGroup>
 
         <TextView
+            android:id="@+id/text_changes_explained"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="If YES, by how many (insert number of additional paid employees since you started to watch these videos)"

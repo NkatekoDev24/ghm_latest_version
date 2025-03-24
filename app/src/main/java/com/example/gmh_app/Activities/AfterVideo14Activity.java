@@ -2,10 +2,14 @@ package com.example.gmh_app.Activities;
 
 import android.os.Bundle;
 import android.util.Log;
+import android.view.View;
+import android.view.Window;
+import android.view.WindowManager;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.RadioGroup;
 import android.widget.RatingBar;
+import android.widget.TextView;
 
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
@@ -23,6 +27,7 @@ public class AfterVideo14Activity extends AppCompatActivity {
     private RatingBar ratingBarClarity;
     private RatingBar ratingBarUsefulness;
     private RatingBar ratingBarCurrentHabits;
+    private TextView changesExplained;
     private EditText editTextLesson;
     private RadioGroup radioGroupChanges;
     private EditText editTextChanges;
@@ -35,6 +40,12 @@ public class AfterVideo14Activity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
+        // Make the activity full screen
+        requestWindowFeature(Window.FEATURE_NO_TITLE);
+        getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN,
+                WindowManager.LayoutParams.FLAG_FULLSCREEN);
+
         setContentView(R.layout.activity_after_video14);
 
         // Initialize Firebase Database reference
@@ -54,6 +65,17 @@ public class AfterVideo14Activity extends AppCompatActivity {
         editTextChanges = findViewById(R.id.et_changes);
         editTextComments = findViewById(R.id.et_comments);
         buttonSubmit = findViewById(R.id.btn_submit);
+        changesExplained = findViewById(R.id.text_changes_explained);
+
+        radioGroupChanges.setOnCheckedChangeListener((group, checkedId) -> {
+            if (checkedId == R.id.rb_changes_yes) {
+                changesExplained.setVisibility(View.VISIBLE);
+                editTextChanges.setVisibility(View.VISIBLE);
+            } else {
+                changesExplained.setVisibility(View.GONE);
+                editTextChanges.setVisibility(View.GONE);
+            }
+        });
 
         buttonSubmit.setOnClickListener(v -> submitFeedback());
     }

@@ -3,12 +3,14 @@ package com.example.gmh_app.Activities;
 import android.os.Bundle;
 import android.text.TextUtils;
 import android.util.Log;
+import android.view.View;
 import android.view.Window;
 import android.view.WindowManager;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.RadioGroup;
 import android.widget.RatingBar;
+import android.widget.TextView;
 
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
@@ -29,6 +31,7 @@ public class AfterVideo6Activity extends AppCompatActivity {
     // UI components
     private RatingBar ratingVideo, ratingClarity, ratingUsefulness, ratingSeparation;
     private EditText editTextLesson, editTextHazards, editTextChanges, editTextComments;
+    private TextView changesExplained;
     private RadioGroup changePlanGroup;
     private Button buttonSubmit;
 
@@ -61,6 +64,17 @@ public class AfterVideo6Activity extends AppCompatActivity {
         editTextComments = findViewById(R.id.editText_comments);
         changePlanGroup = findViewById(R.id.change_plan_group);
         buttonSubmit = findViewById(R.id.button_submit);
+        changesExplained = findViewById(R.id.tv_changes_explain);
+
+        changePlanGroup.setOnCheckedChangeListener((group, checkedId) -> {
+            if (checkedId == R.id.plan_yes) {
+                changesExplained.setVisibility(View.VISIBLE);
+                editTextChanges.setVisibility(View.VISIBLE);
+            } else {
+                changesExplained.setVisibility(View.GONE);
+                editTextChanges.setVisibility(View.GONE);
+            }
+        });
 
         // Set up the Submit button click listener
         buttonSubmit.setOnClickListener(v -> validateAndSubmitFeedback());

@@ -5,6 +5,7 @@ import static android.content.ContentValues.TAG;
 import android.os.Bundle;
 import android.text.Html;
 import android.util.Log;
+import android.view.View;
 import android.view.Window;
 import android.view.WindowManager;
 import android.widget.Button;
@@ -26,6 +27,8 @@ import java.util.Map;
 public class BeforeVideo13Activity extends AppCompatActivity {
 
     private RadioGroup emergencyFundGroup, planEmergencyFundGroup, changesInProfitCalculationGroup;
+
+    private TextView changesExplained;
     private EditText profitPerMonthInput, changesExplanationInput;
     private Button submitButton;
     private TextView tvCombinedToc, introductionText;
@@ -59,6 +62,7 @@ public class BeforeVideo13Activity extends AppCompatActivity {
         submitButton = findViewById(R.id.submitButton);
         tvCombinedToc = findViewById(R.id.tvCombinedToc);
         introductionText = findViewById(R.id.introductionText);
+        changesExplained = findViewById(R.id.text_changes_explained);
 
         // Set dynamic text
         tvCombinedToc.setText(Html.fromHtml(
@@ -69,6 +73,16 @@ public class BeforeVideo13Activity extends AppCompatActivity {
                         "Video 15: Revenue, costs & profits – a complete weekly example with numbers."
         ));
         introductionText.setText(Html.fromHtml("<u>VIDEO 13</u>"));
+
+        changesInProfitCalculationGroup.setOnCheckedChangeListener((group, checkedId) -> {
+            if (checkedId == R.id.changesInProfitYes) {
+                changesExplained.setVisibility(View.VISIBLE);
+                changesExplanationInput.setVisibility(View.VISIBLE);
+            } else {
+                changesExplained.setVisibility(View.GONE);
+                changesExplanationInput.setVisibility(View.GONE);
+            }
+        });
 
         // Set the button listener
         submitButton.setOnClickListener(view -> submitResponses());

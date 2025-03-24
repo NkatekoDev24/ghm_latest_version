@@ -4,12 +4,14 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.text.TextUtils;
 import android.util.Log;
+import android.view.View;
 import android.view.Window;
 import android.view.WindowManager;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.RadioButton;
 import android.widget.RadioGroup;
+import android.widget.TextView;
 
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
@@ -26,6 +28,7 @@ public class OverallAssessmentActivity extends AppCompatActivity {
     private static final String TAG = "OverallAssessmentActivity";
 
     private EditText videosWatched, weeksWatched, mainChanges, finalComments, profitWatched, netProfitWatched, yesWatched, paidWatched;
+    private TextView changesExplained;
     private RadioGroup benefitGroup, confidenceGroup, moneyManagementChangesGroup, progressSkillsGroup, controlGroup, planGroup, profitIncreaseGroup, changesMadeGroup;
     private Button submitButton;
 
@@ -67,6 +70,17 @@ public class OverallAssessmentActivity extends AppCompatActivity {
         yesWatched = findViewById(R.id.yes_watched);
         paidWatched = findViewById(R.id.paid_watched);
         submitButton = findViewById(R.id.submit_button);
+        changesExplained = findViewById(R.id.text_changes_explained);
+
+        changesMadeGroup.setOnCheckedChangeListener((group, checkedId) -> {
+            if (checkedId == R.id.changes_yes) {
+                changesExplained.setVisibility(View.VISIBLE);
+                yesWatched.setVisibility(View.VISIBLE);
+            } else {
+                changesExplained.setVisibility(View.GONE);
+                yesWatched.setVisibility(View.GONE);
+            }
+        });
 
         // Set submit button click listener
         submitButton.setOnClickListener(v -> submitAssessment());

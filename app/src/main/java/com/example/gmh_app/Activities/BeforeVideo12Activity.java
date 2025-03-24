@@ -5,6 +5,7 @@ import static android.content.ContentValues.TAG;
 import android.os.Bundle;
 import android.text.Html;
 import android.util.Log;
+import android.view.View;
 import android.view.Window;
 import android.view.WindowManager;
 import android.widget.Button;
@@ -26,6 +27,7 @@ import java.util.Map;
 public class BeforeVideo12Activity extends AppCompatActivity {
 
     private RadioGroup rgAdjustHabits, rgHappyResults, rgConfidenceProfit, rgSatisfactionProfit;
+    private TextView changesExplained, resultsExplained, txtIfYes;
     private EditText etWhatChanged, etResult, etCurrentProfit;
     private Button btnSubmit;
     private TextView tvCombinedToc, tvVideoList, video12;
@@ -62,6 +64,9 @@ public class BeforeVideo12Activity extends AppCompatActivity {
         tvCombinedToc = findViewById(R.id.tvCombinedToc);
         tvVideoList = findViewById(R.id.tv_video_list);
         video12 = findViewById(R.id.vid12);
+        changesExplained = findViewById(R.id.text_changes_explained);
+        resultsExplained = findViewById(R.id.results_explained);
+        txtIfYes = findViewById(R.id.txtIfYes);
 
         // Set dynamic text content
         tvCombinedToc.setText(Html.fromHtml("<u>PART 4 START PAGE</u>"));
@@ -75,6 +80,25 @@ public class BeforeVideo12Activity extends AppCompatActivity {
         ));
 
         video12.setText(Html.fromHtml("<u>VIDEO 12</u>"));
+
+
+        rgAdjustHabits.setOnCheckedChangeListener((group, checkedId) -> {
+            if (checkedId == R.id.rb_easy_yes_very) {
+                changesExplained.setVisibility(View.VISIBLE);
+                etWhatChanged.setVisibility(View.VISIBLE);
+                resultsExplained.setVisibility(View.VISIBLE);
+                etResult.setVisibility(View.VISIBLE);
+                txtIfYes.setVisibility(View.VISIBLE);
+                rgHappyResults.setVisibility(View.VISIBLE);
+            } else {
+                changesExplained.setVisibility(View.GONE);
+                etWhatChanged.setVisibility(View.GONE);
+                resultsExplained.setVisibility(View.GONE);
+                etResult.setVisibility(View.GONE);
+                txtIfYes.setVisibility(View.GONE);
+                rgHappyResults.setVisibility(View.GONE);
+            }
+        });
 
         // Set the button listener
         btnSubmit.setOnClickListener(view -> submitResponses());
@@ -91,10 +115,17 @@ public class BeforeVideo12Activity extends AppCompatActivity {
         String satisfactionProfit = getSelectedOption(rgSatisfactionProfit);
 
         // Validate required fields
-        if (adjustHabits.isEmpty() || whatChanged.isEmpty() || result.isEmpty() || happyResults.isEmpty() ||
-                confidenceProfit.isEmpty() || currentProfit.isEmpty() || satisfactionProfit.isEmpty() || !isNumeric(currentProfit)) {
+        if (adjustHabits.isEmpty() || confidenceProfit.isEmpty() || currentProfit.isEmpty() || satisfactionProfit.isEmpty() || !isNumeric(currentProfit)) {
             showMessageDialog("Validation Error", "Please complete all required fields with valid input.", false);
             return;
+        }
+
+        // Check additional fields only if "Very Easy" is selected
+        if (rgAdjustHabits.getCheckedRadioButtonId() == R.id.rb_easy_yes_very) {
+            if (whatChanged.isEmpty() || result.isEmpty() || happyResults.isEmpty()) {
+                showMessageDialog("Validation Error", "Please complete the follow-up fields when 'Very Easy' is selected.", false);
+                return;
+            }
         }
 
         // Create a map to store the data in Firebase

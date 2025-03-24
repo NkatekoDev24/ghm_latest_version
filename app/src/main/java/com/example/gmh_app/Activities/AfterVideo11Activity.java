@@ -12,6 +12,7 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.RadioGroup;
 import android.widget.RatingBar;
+import android.widget.TextView;
 
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
@@ -31,6 +32,7 @@ public class AfterVideo11Activity extends AppCompatActivity {
 
     private RatingBar ratingVideo, ratingClarity, ratingUsefulness, ratingControlCurrent, ratingControlFuture;
     private RadioGroup fixedCostChangesGroup;
+    private TextView changesExplained;
     private EditText lessonLearnedEditText, changesExplanationEditText, additionalCommentsEditText;
     private Button submitButton;
     private DatabaseReference databaseReference;
@@ -62,6 +64,17 @@ public class AfterVideo11Activity extends AppCompatActivity {
         changesExplanationEditText = findViewById(R.id.changes_explanation);
         additionalCommentsEditText = findViewById(R.id.additional_comments);
         submitButton = findViewById(R.id.submit_button);
+        changesExplained = findViewById(R.id.text_changes_explained);
+
+        fixedCostChangesGroup.setOnCheckedChangeListener((group, checkedId) -> {
+            if (checkedId == R.id.fixed_cost_changes_yes) {
+                changesExplained.setVisibility(View.VISIBLE);
+                changesExplanationEditText.setVisibility(View.VISIBLE);
+            } else {
+                changesExplained.setVisibility(View.GONE);
+                changesExplanationEditText.setVisibility(View.GONE);
+            }
+        });
 
         submitButton.setOnClickListener(new View.OnClickListener() {
             @Override

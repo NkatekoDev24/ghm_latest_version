@@ -3,6 +3,7 @@ package com.example.gmh_app.Activities;
 import android.os.Bundle;
 import android.text.TextUtils;
 import android.util.Log;
+import android.view.View;
 import android.view.Window;
 import android.view.WindowManager;
 import android.widget.Button;
@@ -10,6 +11,7 @@ import android.widget.EditText;
 import android.widget.RadioButton;
 import android.widget.RadioGroup;
 import android.widget.RatingBar;
+import android.widget.TextView;
 
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
@@ -28,6 +30,7 @@ public class AfterVideo12Activity extends AppCompatActivity {
     // UI Components
     private RatingBar ratingVideo, ratingClarity, ratingUsefulness;
     private RadioGroup profitChangesGroup, profitDifferenceGroup, profitConfidenceGroup;
+    private TextView changesExplained, txtYes;
     private EditText lessonLearnedEditText, changesExplanationEditText, profitAmountEditText, additionalCommentsEditText;
     private Button submitButton;
 
@@ -63,6 +66,28 @@ public class AfterVideo12Activity extends AppCompatActivity {
         profitAmountEditText = findViewById(R.id.profit_amount);
         additionalCommentsEditText = findViewById(R.id.additional_comments);
         submitButton = findViewById(R.id.submit_button);
+        changesExplained = findViewById(R.id.text_changes_explained);
+        txtYes = findViewById(R.id.txtIfYes);
+
+        profitChangesGroup.setOnCheckedChangeListener((group, checkedId) -> {
+            if (checkedId == R.id.profit_changes_yes) {
+                changesExplained.setVisibility(View.VISIBLE);
+                changesExplanationEditText.setVisibility(View.VISIBLE);
+            } else {
+                changesExplained.setVisibility(View.GONE);
+                changesExplanationEditText.setVisibility(View.GONE);
+            }
+        });
+
+        profitDifferenceGroup.setOnCheckedChangeListener((group, checkedId) -> {
+            if (checkedId == R.id.profit_difference_yes) {
+                txtYes.setVisibility(View.VISIBLE);
+                profitAmountEditText.setVisibility(View.VISIBLE);
+            } else {
+                txtYes.setVisibility(View.GONE);
+                profitAmountEditText.setVisibility(View.GONE);
+            }
+        });
 
         // Submit button click handler
         submitButton.setOnClickListener(v -> validateAndSubmitFeedback());

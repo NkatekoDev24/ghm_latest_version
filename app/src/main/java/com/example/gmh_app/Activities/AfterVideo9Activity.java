@@ -11,6 +11,7 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.RadioGroup;
 import android.widget.RatingBar;
+import android.widget.TextView;
 
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
@@ -29,6 +30,7 @@ public class AfterVideo9Activity extends AppCompatActivity {
     private static final String TAG = "AfterVideo9Activity";
 
     private RatingBar ratingVideo, ratingClarity, ratingUsefulness, ratingMoneyHabits, likingMoneyHabits;
+    private TextView changesExplained;
     private RadioGroup changePlanGroup;
     private EditText editTextLesson, editTextChanges, editTextComments;
     private Button buttonSubmit;
@@ -60,6 +62,17 @@ public class AfterVideo9Activity extends AppCompatActivity {
         editTextComments = findViewById(R.id.editText_comments);
         changePlanGroup = findViewById(R.id.change_plan_group);
         buttonSubmit = findViewById(R.id.button_submit);
+        changesExplained = findViewById(R.id.tv_changes_explain);
+
+        changePlanGroup.setOnCheckedChangeListener((group, checkedId) -> {
+            if (checkedId == R.id.plan_yes) {
+                changesExplained.setVisibility(View.VISIBLE);
+                editTextChanges.setVisibility(View.VISIBLE);
+            } else {
+                changesExplained.setVisibility(View.GONE);
+                editTextChanges.setVisibility(View.GONE);
+            }
+        });
 
         buttonSubmit.setOnClickListener(new View.OnClickListener() {
             @Override
