@@ -1,5 +1,6 @@
 package com.example.gmh_app.Activities;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.text.TextUtils;
 import android.util.Log;
@@ -100,16 +101,19 @@ public class OverallAssessmentActivity extends AppCompatActivity {
         databaseReference.child(String.valueOf(System.currentTimeMillis())).setValue(assessmentData)
                 .addOnCompleteListener(task -> {
                     if (task.isSuccessful()) {
-                        showSuccessDialog();
+                        navigateToGMHBonusActivity();
                     } else {
                         String error = task.getException() != null ? task.getException().getMessage() : "Unknown error.";
                         Log.e(TAG, "Error submitting data: " + error);
                         showErrorDialog("Error submitting data: " + error);
                     }
                 });
+    }
 
-        // Proceed to the next activity immediately
-        setResult(RESULT_OK);
+    // Navigate to GMHBonusActivity
+    private void navigateToGMHBonusActivity() {
+        Intent intent = new Intent(this, GmhBonusActivity.class);
+        startActivity(intent);
         finish(); // Close this activity
     }
 
@@ -154,15 +158,6 @@ public class OverallAssessmentActivity extends AppCompatActivity {
                 .setTitle("Validation Error")
                 .setMessage(message)
                 .setPositiveButton("OK", null)
-                .show();
-    }
-
-    // Helper method to show a success dialog
-    private void showSuccessDialog() {
-        new AlertDialog.Builder(this)
-                .setTitle("Success")
-                .setMessage("Assessment submitted successfully!")
-                .setPositiveButton("OK", (dialog, which) -> finish()) // Close activity
                 .show();
     }
 }
